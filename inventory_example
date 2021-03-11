@@ -1,0 +1,27 @@
+VARIABLE_HOSTS: civento-dev
+TC_STAGE: QS
+SOFTWARE: tomcat                            # Softwarename fuer Pfad/User- Aufbau, ex: tomcat
+TC_APPLICATION: civ
+TC_BASEDIR: "/opt/{{ SOFTWARE }}"              # Basispfad fuer Installation, ex: /opt/{{ SOFTWARE }}/ = /opt/tomcat
+TC_GID: 200                                    # User+ Group-ID für SystemD-User, in der Regel 200
+NXLOG_GID: 155                              # User-ID für nxlog User
+TC_AUTOMATION_USER: aut_civ-dev
+TC_AUTOMATION_UID: 900
+TC_NFS_HOST: hostname_of_nfs
+JAVA_TGZ: OpenJDK8U-jdk_x64_linux_8u242b08.tar.gz
+TOMCAT_VERSION: apache-tomcat-8.5.51
+
+#### INSTANZ SPEZIFISCHE VARIABLEN #####
+tomcat_instances:
+  - INSTANCE_NAME: civ-dev
+    INSTANCE_GID: 202
+    PORTPREFIX: 80
+    JMX_USER: JMXMON
+    JMX_PASS: type_password
+    CRON_HOUR: 3
+    CRON_MIN: 50
+    CRON_WEEKDAY: "1"
+    RAM_FE: 2G
+    RAM_BE: 4G
+    SJF_MAX_LOAD: 100
+    AQB_ENABLED: "true"
