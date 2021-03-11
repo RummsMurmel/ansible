@@ -1,0 +1,15 @@
+---
+
+- name: "add {{ TC_INSTANCE_USER }} group"
+  group:
+    name: "{{ TC_INSTANCE_USER }}"
+    gid: "{{ item.INSTANCE_GID }}"
+
+- name: "add {{ TC_INSTANCE_USER }} user"
+  user:
+    name: "{{ TC_INSTANCE_USER }}"
+    uid: "{{ item.INSTANCE_GID }}"
+    group: "{{ item.INSTANCE_GID }}"
+    groups: "{{ SOFTWARE }},{{ item.INSTANCE_GID  }}"
+    shell: "/bin/false"
+    createhome: no
