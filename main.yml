@@ -1,0 +1,11 @@
+---
+- name: Install Tomcat instance
+  block:
+    - include_tasks: java_tarball_install.yml
+      tags: java_tarball_install
+
+    - include_tasks: catalina_base_user.yml
+      with_items: "{{ tomcat_instances }}"
+      loop_control:
+        label: "{{ item.INSTANCE_NAME }}"
+      tags: tomcat_catalina_base_user
