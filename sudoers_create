@@ -1,0 +1,58 @@
+---
+- name: "Ermitteln der aktivierten Dienste"
+  find:
+    paths: "/etc/systemd/system/multi-user.target.wants"
+    file_type: link
+    use_regex: yes
+    patterns:
+      - '^{{ SOFTWARE }}-.*.service$'
+  register: found_instances
+
+
+- name: "Ermitteln der bestehenden Application-Gruppen"
+  find:
+    paths: "/opt/{{ SOFTWARE }}"
+    file_type: directory
+    use_regex: yes
+    patterns:
+      - '^{{ SOFTWARE }}-.*$'
+      - '^apache-tomcat.*$'
+  register: found_usergroups
+
+- name: "Automationsuser den Application-Groups hinzufügen"
+  user:
+    name: "{{ TC_AUTOMATION_USER }}"
+    groups: "{{  item.gr_name }}"
+    append: true
+  loop: "{{ found_usergroups.files }}"
+
+- name: "Create Tempfile with sudoers commands"
+  tempfile:
+    state: file
+    suffix: ansible_flowster_sudoers_tmp
+  register: tempfile
+
+- name: "Fill Tempfile with sudoers commands"
+  lineinfile:
+    path: "{{ tempfile.path }}"
+    line: "{{ TC_AUTOMATION_USER }} ALL=(ALL) NOPASSWD: /bin/systemctl stop {{  item.path.split('/')[-1] }}, /bin/systemctl start {{ item.path.split('/')[-1] }}"
+  loop: "{{ found_instances.files }}"
+
+- name: "print Tempfile"
+  command: "cat {{ tempfile.path }}"
+  register: command_output
+
+- name: "debug tempfile"
+  debug:
+    msg: "{{ command_output.stdout }}"
+
+- name: "Ansible managed block in sudoers"
+  blockinfile:
+    path: /etc/sudoers
+    block: "{{ command_output.stdout }}"
+    marker: "### {mark} ANSIBLE MANAGED BLOCK - Flowster Access###"
+
+- name: "delete tempfile"
+  file:
+    path: "{{ tempfile.path }}"
+    state: absent
