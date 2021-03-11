@@ -25,3 +25,15 @@ tomcat_instances:
     RAM_BE: 4G
     SJF_MAX_LOAD: 100
     AQB_ENABLED: "true"
+  - INSTANCE_NAME: civ-brd-dev
+    INSTANCE_GID: 261
+    PORTPREFIX: 110
+    JMX_USER: JMXMON
+    JMX_PASS: type_password
+    CRON_HOUR: 3
+    CRON_MIN: 50
+    CRON_WEEKDAY: "1"
+    RAM_FE: 2G
+    RAM_BE: 4G
+    SJF_MAX_LOAD: 100
+    AQB_ENABLED: "false
